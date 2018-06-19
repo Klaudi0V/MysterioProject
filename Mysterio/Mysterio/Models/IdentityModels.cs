@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -21,7 +22,7 @@ namespace Mysterio.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("EventsDbConnectionString", throwIfV1Schema: false)
         {
         }
 
@@ -29,5 +30,25 @@ namespace Mysterio.Models
         {
             return new ApplicationDbContext();
         }
+
+
+        // definir as 'tabelas' da minha base de dados
+        public virtual DbSet<Photos> Fotos { get; set; }
+        public virtual DbSet<Events> Eventos { get; set; }
+        public virtual DbSet<Promotions> Promocoes { get; set; }
+        public virtual DbSet<PromocoesEventos> PromocoesNosEventos { get; set; }
+        public virtual DbSet<Tickets> Bilhetes { get; set; }
+        public object Event { get; internal set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+            modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+
     }
 }
